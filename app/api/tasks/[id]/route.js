@@ -1,5 +1,5 @@
-import dbConnect from '@/lib/mongodb';
-import Task from '@/models/Task';
+import dbConnect from '../../../lib/mongodb';
+import Task from '../../../models/Task';
 import { NextResponse } from 'next/server';
 
 // GET /api/tasks/:id
