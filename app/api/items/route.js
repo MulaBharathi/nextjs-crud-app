@@ -1,16 +1,37 @@
-// GET (read all), POST (create new task)
 import dbConnect from '@/lib/mongodb';
 import Task from '@/models/Task';
+import { NextResponse } from 'next/server';
 
-export async function GET() {
+// GET /api/tasks/:id
+export async function GET(req, { params }) {
   await dbConnect();
-  const tasks = await Task.find();
-  return Response.json(tasks);
+  const { id } = params;
+  const task = await Task.findById(id);
+  if (!task) {
+    return NextResponse.json({ message: 'Task not found' }, { status: 404 });
+  }
+  return NextResponse.json(task);
 }
 
-export async function POST(req) {
-  const data = await req.json();
+// PUT /api/tasks/:id
+export async function PUT(req, { params }) {
   await dbConnect();
-  const task = await Task.create(data);
-  return Response.json(task);
+  const { id } = params;
+  const data = await req.json();
+  const updatedTask = await Task.findByIdAndUpdate(id, data, { new: true });
+  if (!updatedTask) {
+    return NextResponse.json({ message: 'Task not found' }, { status: 404 });
+  }
+  return NextResponse.json(updatedTask);
+}
+
+// DELETE /api/tasks/:id
+export async function DELETE(req, { params }) {
+  await dbConnect();
+  const { id } = params;
+  const deletedTask = await Task.findByIdAndDelete(id);
+  if (!deletedTask) {
+    return NextResponse.json({ message: 'Task not found' }, { status: 404 });
+  }
+  return NextResponse.json({ message: 'Task deleted' });
 }
